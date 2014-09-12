@@ -49,57 +49,59 @@ module.exports = function (grunt) {
       files = [];
 
     // check if files exist and push to array that'll be zipped
-    this.files.forEach(function (file) {
-      file.src
-        .filter(function (path) {
-          return grunt.file.exists(path);
-        })
-        .map(function (path) {
-          var zipObj = { source: path, target: file.dest };
+    // this.files.forEach(function (file) {
+    //   file.src
+    //     .filter(function (path) {
+    //       return grunt.file.exists(path);
+    //     })
+    //     .map(function (path) {
+    //       var zipObj = { source: path, target: file.dest };
 
-          if(path.indexOf('.') === -1) {
-            delete zipObj.source;
-          }
+    //       if(path.indexOf('.') === -1) {
+    //         delete zipObj.source;
+    //       }
 
-          files.push(zipObj);
-        });
-    });
+    //       files.push(zipObj);
+    //     });
+    // });
 
-    // batch zip theme files
-    grunt.log.writeln('Compressing theme files...')
-    zip.batchAdd(files, function () {
-      if(!grunt.file.exists(options.zipTo)) {
-        grunt.file.mkdir(options.zipTo);
-      }
+    // // batch zip theme files
+    // grunt.log.writeln('Compressing theme files...')
+    // zip.batchAdd(files, function () {
+    //   if(!grunt.file.exists(options.zipTo)) {
+    //     grunt.file.mkdir(options.zipTo);
+    //   }
 
-      zip.writeToFileSycn(options.zipTo + '/' + options.zipFile);
-      emitter.emit('zipped');
-    });
+    //   zip.writeToFileSycn(options.zipTo + '/' + options.zipFile);
+    //   emitter.emit('zipped');
+    // });
 
     // whem zipped, get s3 presigned post keys
-    emitter.on('zipped', function () {
-      grunt.log.ok();
-      grunt.log.writeln('Getting S3 credentials...');
+    // emitter.on('zipped', function () {
+    //   // grunt.log.ok();
 
-      var onPresignedSuccess = function (res) {
-        var result = '';
-        res.on('data', function (chunk) {
-          result += chunk;
-        });
+    // });
 
-        res.on('end', function () {
-          emitter.emit('presigned_post', JSON.parse(result));
-        });
-      };
+    grunt.log.writeln('Getting S3 credentials...');
 
-      https.get({
-        host: config.presigned_post.host,
-        path: config.presigned_post.path.replace(':id', options.theme),
-        headers: {
-          Authorization: 'Token token='+options.token
-        }
-      }, onPresignedSuccess);
-    });
+    var onPresignedSuccess = function (res) {
+      var result = '';
+      res.on('data', function (chunk) {
+        result += chunk;
+      });
+
+      res.on('end', function () {
+        emitter.emit('presigned_post', JSON.parse(result));
+      });
+    };
+
+    https.get({
+      host: config.presigned_post.host,
+      path: config.presigned_post.path.replace(':id', options.theme),
+      headers: {
+        Authorization: 'Token token='+options.token
+      }
+    }, onPresignedSuccess);
 
     // when presigned post is ready, upload to s3
     emitter.on('presigned_post', function (result) {
@@ -116,7 +118,7 @@ module.exports = function (grunt) {
       form.append('signature', result.fields.signature);
       form.append('success_action_status', result.fields.success_action_status);
       form.append('acl', result.fields.acl);
-      form.append('file', fs.createReadStream(options.zipTo + '/' + options.zipFile));
+      form.append('file', fs.createReadStream(options.package_file));
 
       var onUploadSuccess = function (res) {
         var response = '';

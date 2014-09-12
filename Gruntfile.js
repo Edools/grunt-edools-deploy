@@ -38,7 +38,7 @@ module.exports = function (grunt) {
           domain: 'demo',
           theme: '53ab222e72616969ed000000',
           token: 'b40bbce82ef79ea6be0fb3294e7d948c:b712a32e4fb59e141e935da4c79ebce1',
-          zipTo: 'test/fixtures/public'
+          package_file: 'test/fixtures/public/dist.zip'
         },
         files: [
           {expand: true, cwd: 'test/fixtures/dist/' ,src: ['**']}
