@@ -1,0 +1,36 @@
+{
+  "name": "grunt-edools-deploy",
+  "version": "0.0.1",
+  "description": "Deploys a theme for your Edools School",
+  "repository": "",
+  "author": {
+    "name": "Diogo Beda",
+    "email": "diogo.fbeda@gmail.com",
+    "url": ""
+  },
+  "keywords": [
+    "gruntplugin"
+  ],
+  "main": "Gruntfile.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-jshint": "~0.8.0",
+    "grunt-contrib-nodeunit": "~0.3.0",
+    "grunt": "~0.4.2",
+    "jshint-stylish": "~0.1.5",
+    "load-grunt-tasks": "~0.3.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "dependencies": {
+    "easy-zip": "0.0.4",
+    "form-data": "^0.1.4",
+    "q": "^1.0.1",
+    "xml2js": "^0.4.4"
+  }
+}
