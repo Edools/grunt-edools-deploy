@@ -1,3 +1,4 @@
+
 /*
  * grunt-edools-deploy
  *
@@ -8,10 +9,10 @@
 
 'use strict';
 var https = require('https'),
-  EasyZip = require('easy-zip').EasyZip,
   FormData = require('form-data'),
   Q = require('q'),
   fs = require('fs'),
+  ThemeHandler = require('@edools/epm').ThemeHandler,
   parseString = Q.denodeify(require('xml2js').parseString),
   EventEmitter = new require('events').EventEmitter;
 
@@ -31,56 +32,14 @@ module.exports = function (grunt) {
     }
   };
 
-  var httpsQ = function (opts) {
-    var deferred = Q.defer();
-    https.request(opts, deferred.resolve).on('error', deferred.reject);
-    return deferred.promise;
-  };
-
-
   grunt.registerMultiTask('edools_deploy', 'Deploys a theme for your Edools School', function () {
     var options = this.options({
       zipFile: 'dist.zip'
     });
 
-    var zip = new EasyZip(),
-      emitter = new EventEmitter(),
+    var emitter = new EventEmitter(),
       done = this.async(),
       files = [];
-
-    // check if files exist and push to array that'll be zipped
-    // this.files.forEach(function (file) {
-    //   file.src
-    //     .filter(function (path) {
-    //       return grunt.file.exists(path);
-    //     })
-    //     .map(function (path) {
-    //       var zipObj = { source: path, target: file.dest };
-
-    //       if(path.indexOf('.') === -1) {
-    //         delete zipObj.source;
-    //       }
-
-    //       files.push(zipObj);
-    //     });
-    // });
-
-    // // batch zip theme files
-    // grunt.log.writeln('Compressing theme files...')
-    // zip.batchAdd(files, function () {
-    //   if(!grunt.file.exists(options.zipTo)) {
-    //     grunt.file.mkdir(options.zipTo);
-    //   }
-
-    //   zip.writeToFileSycn(options.zipTo + '/' + options.zipFile);
-    //   emitter.emit('zipped');
-    // });
-
-    // whem zipped, get s3 presigned post keys
-    // emitter.on('zipped', function () {
-    //   // grunt.log.ok();
-
-    // });
 
     grunt.log.writeln('Getting S3 credentials...');
 
@@ -146,34 +105,24 @@ module.exports = function (grunt) {
       parseString(response)
         .then(function (result) {
           var data = {
-              school: options.domain,
-              theme: options.theme,
-              package_url: result.PostResponse.Location[0]
-            };
+            id: options.theme,
+            dependencies: options.apps,
+            token: options.token,
+            package_url: result.PostResponse.Location[0]
+          };
 
-          var req = https.request({
-            method: 'POST',
-            host: config.deploy.host,
-            path: config.deploy.path,
-            auth: 'themeDeploy:themeDeploy123',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }, onDeploySuccess);
-          req.write(JSON.stringify(data));
-          req.on('error', onDeployError);
-          req.end();
+          ThemeHandler.deploy(data)
+            .then(onDeploySuccess)
+            .catch(onDeployError);
         });
 
       var onDeployError = function (err) {
+        console.log(err.entity.errors);
         grunt.log.error(err);
       };
 
       var onDeploySuccess = function (res) {
-        if(res.statusCode === 200) {
-          grunt.log.ok();
-        }
-
+        grunt.log.ok();
         emitter.emit('task_done');
       };
     });
