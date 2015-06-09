@@ -1,12 +1,11 @@
 {
   "name": "grunt-edools-deploy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Deploys a theme for your Edools School",
-  "repository": "",
+  "repository": "https://github.com/Edools/grunt-edools-deploy.git",
   "author": {
     "name": "Diogo Beda",
-    "email": "diogo.fbeda@gmail.com",
-    "url": ""
+    "email": "diogo.fbeda@gmail.com"
   },
   "keywords": [
     "gruntplugin"
@@ -29,6 +28,7 @@
     "test": "grunt test"
   },
   "dependencies": {
+    "@edools/epm": "^0.1.0",
     "easy-zip": "0.0.4",
     "form-data": "^0.1.4",
     "q": "^1.0.1",
