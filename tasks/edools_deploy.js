@@ -117,8 +117,8 @@ module.exports = function (grunt) {
         });
 
       var onDeployError = function (err) {
-        console.log(err.entity.errors);
-        grunt.log.error(err);
+        console.log(err.entity);
+        grunt.log.error(JSON.stringify(err));
       };
 
       var onDeploySuccess = function (res) {
