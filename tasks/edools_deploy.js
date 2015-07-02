@@ -50,7 +50,13 @@ module.exports = function (grunt) {
       });
 
       res.on('end', function () {
-        emitter.emit('presigned_post', JSON.parse(result));
+        try {
+          var presigned = JSON.parse(result);
+          emitter.emit('presigned_post', presigned);
+        } catch (e) {
+          console.error(result);
+          grunt.fail.warn(e);
+        }
       });
     };
 
