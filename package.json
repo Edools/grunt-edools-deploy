@@ -1,6 +1,6 @@
 {
   "name": "grunt-edools-deploy",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Deploys a theme for your Edools School",
   "repository": "https://github.com/Edools/grunt-edools-deploy.git",
   "author": {
@@ -28,7 +28,7 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "@edools/epm": "^0.1.5",
+    "@edools/epm": "0.2.0",
     "easy-zip": "0.0.4",
     "form-data": "^0.1.4",
     "q": "^1.0.1",
